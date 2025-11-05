@@ -5,57 +5,32 @@ import (
 	"strings"
 )
 
+var conferenceName = "Go Conference"
+
+const conferenceTickets = 50
+
+var remainingTickets uint = 50
+var bookings = []string{}
+
 func main() {
 
-	var conferenceName = "Go Conference"
-	const conferenceTickets = 50
-	var remainingTickets uint = 50
+	greetUsers()
 
-	fmt.Printf("Welcom to %v booking application\n", conferenceName)
-	fmt.Println("We have total of", conferenceTickets, "and", remainingTickets, "are still available")
-	fmt.Println("You can buy tickets from here.")
-
-	var bookings = []string{}
 	for {
 
-		var firstName string
-		var lastName string
-		var email string
-		var userTickets uint
+		firstName, lastName, email, userTickets := captureUserInput()
 
-		fmt.Println("Please enter your first name")
-		fmt.Scan(&firstName)
-		fmt.Println("Please enter your last name")
-		fmt.Scan(&lastName)
-		fmt.Println("Please enter your email")
-		fmt.Scan(&email)
-		fmt.Println("Number of tickets ? ")
-		fmt.Scan(&userTickets)
+		remainingTickets = remainingTickets - userTickets
 
-		isValidName := len(firstName) >= 2 && len(lastName) >= 2
-		isValidEmail := strings.Contains(email, "@")
-		isValidUserTicketCount := userTickets > 0 && userTickets <= remainingTickets
+		isValidName, isValidEmail, isValidUserTicketCount := validateUserInput(firstName, lastName, email, userTickets)
 
 		if isValidName && isValidEmail && isValidUserTicketCount {
-			remainingTickets = remainingTickets - userTickets
-			bookings = append(bookings, firstName+" "+lastName)
 
-			fmt.Printf("The whole slice %v\n", bookings)
-			fmt.Printf("The first value %v\n", bookings[0])
-			fmt.Printf("The length %v\n", len(bookings))
-			fmt.Printf("The Type %T\n", bookings)
+			processBooking(firstName, lastName, email, userTickets)
 
-			fmt.Printf("Thank you %v %v for your reservation for %v tickets. You will get confirmation to %v soon\n", firstName, lastName, userTickets, email)
-			fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
-
-			fmt.Printf("There are all our bookings in the application %v\n", bookings)
-
-			firstNames := []string{}
-			for _, booking := range bookings {
-				var names = strings.Fields(booking)
-				firstNames = append(firstNames, names[0])
-			}
+			firstNames := printFirstNames()
 			fmt.Printf("The first names of bookings are: %v\n", firstNames)
+
 			if remainingTickets == 0 {
 				//end the program
 				fmt.Println("Conference is fully booked. Please try next year.")
@@ -76,4 +51,54 @@ func main() {
 
 	}
 
+}
+
+func validateUserInput(firstName, lastName, email string, userTickets uint) (bool, bool, bool) {
+	isValidName := len(firstName) >= 2 && len(lastName) >= 2
+	isValidEmail := strings.Contains(email, "@")
+	isValidUserTicketCount := userTickets > 0 && userTickets <= remainingTickets
+	return isValidName, isValidEmail, isValidUserTicketCount
+}
+
+func greetUsers() {
+	fmt.Printf("Welcom to %v booking application\n", conferenceName)
+	fmt.Println("We have total of", conferenceTickets, "and", remainingTickets, "are still available")
+	fmt.Println("You can buy tickets from here.")
+}
+
+func printFirstNames() []string {
+	firstNames := []string{}
+	for _, booking := range bookings {
+		var names = strings.Fields(booking)
+		firstNames = append(firstNames, names[0])
+	}
+	return firstNames
+}
+
+func captureUserInput() (string, string, string, uint) {
+	var firstName string
+	var lastName string
+	var email string
+	var userTickets uint
+
+	fmt.Println("Please enter your first name")
+	fmt.Scan(&firstName)
+	fmt.Println("Please enter your last name")
+	fmt.Scan(&lastName)
+	fmt.Println("Please enter your email")
+	fmt.Scan(&email)
+	fmt.Println("Number of tickets ? ")
+	fmt.Scan(&userTickets)
+	return firstName, lastName, email, userTickets
+}
+
+func processBooking(firstName string, lastName string, email string, userTickets uint) {
+	bookings = append(bookings, firstName+" "+lastName)
+	fmt.Printf("Thank you %v %v for your reservation for %v tickets. You will get confirmation to %v soon\n", firstName, lastName, userTickets, email)
+	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+	fmt.Printf("The whole slice %v\n", bookings)
+	fmt.Printf("The first value %v\n", bookings[0])
+	fmt.Printf("The length %v\n", len(bookings))
+	fmt.Printf("The Type %T\n", bookings)
+	fmt.Printf("There are all our bookings in the application %v\n", bookings)
 }
